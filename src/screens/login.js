@@ -1,23 +1,87 @@
 //import liraries
-import React, { Component, useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground, Image, Keyboard, TouchableWithoutFeedback, Button, TouchableOpacity, ScrollView } from 'react-native';
+import React, { Component, useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ImageBackground, Image, Keyboard, TouchableWithoutFeedback, Button, TouchableOpacity, ScrollView, } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import LoginImage from '../images/login-background/login.jpg';
-import logo from '../images/logo/logo.png'
+import logo from '../images/logo/logo.png';
+import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth'
+import { GoogleSignin, statusCodes, GoogleSigninButton } from '@react-native-community/google-signin';
+import { LoginManager, AccessToken, LoginButton } from 'react-native-fbsdk';
+
 
 // create a component
-const Login = () => {
+const Login = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    // const [loggedIn, setloggedIn] = useState(false);
+    // const [userInfo, setuserInfo] = useState([]);
+
+
+    useEffect(() => {
+        GoogleSignin.configure({
+            scopes: ['email', 'profile'], // what API you want to access on behalf of the user, default is email and profile
+            webClientId:
+                '452543779948-ptdt0deuicsqi3ui30svjo1l866lm1bg.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
+            offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+        });
+    }, []);
 
 
     const SignIn = () => {
-        console.log(email);
-        console.log(password);
+        const user = {
+            email: email,
+            password: password,
+        }
     }
+    const googleSignIn = async () => {
+        try {
+            await GoogleSignin.hasPlayServices();
+            const userInfo = await GoogleSignin.signIn();
+            const googleCredential = auth.GoogleAuthProvider.credential(userInfo.idToken);
+            // Sign-in the user with the credential
+            console.log(userInfo);
+            database().ref('/').child('googleUsers').push(userInfo.user)
+            return auth().signInWithCredential(googleCredential);
+
+        } catch (error) {
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                console.log(error);
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                console.log(error);
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                // play services not available or outdated
+            } else {
+                console.log(error);
+            }
+        }
+    };
+
+
+    // const FacbookLogin = async () => {
+    //     // Attempt login with permissions
+    //     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+
+    //     if (result.isCancelled) {
+    //         throw 'User cancelled the login process';
+    //     }
+
+    //     // Once signed in, get the users AccesToken
+    //     const data = await AccessToken.getCurrentAccessToken();
+
+    //     if (!data) {
+    //         throw 'Something went wrong obtaining access token';
+    //     }
+
+    //     // Create a Firebase credential with the AccessToken
+    //     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
+
+    //     // Sign-in the user with the credential
+    //     return auth().signInWithCredential(facebookCredential);
+    // }
 
     return (
-        <ScrollView contentContainerStyle={{flexGrow: 1}}  keyboardShouldPersistTaps='handled'>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps='handled'>
             <View style={styles.container} ke>
                 <ImageBackground source={LoginImage} style={styles.back_image}>
                     <View style={styles.logoContainer}>
@@ -25,24 +89,62 @@ const Login = () => {
                         <Text style={styles.LogoText}>BLOOD BANK</Text>
                     </View>
                     <View style={styles.loginContainer}>
-                        <TextInput style={styles.textInput} value={email} onChangeText={text => setEmail(text)}
-                            maxLength={40} placeholder="Email" autoCapitalize="none" autoCorrect={false} placeholderTextColor="#F0F0F0" />
-                        <TextInput value={password} placeholderTextColor="#F0F0F0" placeholder="Password" style={styles.textInput} secureTextEntry={true}
-                            maxLength={40} onChangeText={text => setPassword(text)} />
-                        <View style={{ flex: 0.1, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' }}>
+                        <View style={{ flex: 0.2, flexDirection: 'column' }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'red', paddingLeft: 20 }}>Email</Text>
+                            <TextInput style={styles.textInput} value={email} onChangeText={text => setEmail(text)}
+                                maxLength={40} placeholder="Email" autoCapitalize="none" autoCorrect={false} placeholderTextColor="grey" />
+                        </View>
+                        <View style={{ flex: 0.22, flexDirection: 'column' }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'red', paddingLeft: 20 }}>Password</Text>
+                            <TextInput value={password} placeholderTextColor="grey" placeholder="Password" style={styles.textInput} secureTextEntry={true}
+                                maxLength={40} onChangeText={text => setPassword(text)} />
+                        </View>
+                        <View style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                             <TouchableOpacity style={styles.button} onPress={SignIn} >
                                 <Text style={{ color: 'red', fontSize: 20, fontWeight: 'bold' }}>SIGN IN</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.button} >
-                                <Text style={{ color: 'red', fontSize: 20, fontWeight: 'bold' }}>SIGN UP</Text>
-                            </TouchableOpacity>
+                            <View style={{ flex: 0.1, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' }}>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#ffff' }}>New User ?</Text>
+                                <TouchableOpacity style={styles.buttonText} onPress={() => navigation.navigate('SignUp')}>
+                                    <Text style={{ color: '#ffff', fontSize: 20, fontWeight: 'bold', textDecorationStyle: 'solid', textDecorationLine: 'underline' }}>SIGN UP</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
+                        <View>
+                            <GoogleSigninButton style={{ height: 60, width: 240 }}
+                                size={GoogleSigninButton.Size.Wide} onPress={googleSignIn} />
+                        </View>
+                        <View style={{ width: 230 }}>
+                            {/* <Button
+                                onPress={FacbookLogin}
+                                title="Continue with fb"
+                                color="#4267B2" ></Button> */}
+
+                            {/* <LoginButton
+                                onLoginFinished={
+                                    (error, result) => {
+                                        if (error) {
+                                            console.log("login has error: " + result.error);
+                                        } else if (result.isCancelled) {
+                                            console.log("login is cancelled.");
+                                        } else {
+                                            AccessToken.getCurrentAccessToken().then(
+                                                (data) => {
+                                                    console.log(data.accessToken.toString())
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                                onLogoutFinished={() => console.log("logout.")} /> */}
+                        </View>
+                    
                     </View>
 
 
                 </ImageBackground>
             </View >
-        </ScrollView>
+        </ScrollView >
     );
 };
 
@@ -61,15 +163,16 @@ const styles = StyleSheet.create({
         color: "#000000"
     },
     logoContainer: {
-        flex: 0.5,
+        flex: 0.4,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        alignSelf: 'center'
     },
     image: {
         flex: 0.5,
         alignItems: 'center',
-        width: 200,
-        height: 80,
+        width: 150,
+        height: 70,
         resizeMode: 'stretch'
     },
     LogoText: {
@@ -77,7 +180,7 @@ const styles = StyleSheet.create({
         // fontFamily: 'monospace',
         fontSize: 40,
         fontWeight: 'bold',
-        paddingTop: 30,
+        paddingTop: 20,
     },
     loginContainer: {
         flex: 0.5,
@@ -91,12 +194,12 @@ const styles = StyleSheet.create({
         height: 50,
         width: 250,
         fontSize: 17,
-        margin: 10,
+        margin: 5,
         fontWeight: '200',
         borderColor: 'red',
         paddingLeft: 10,
         borderWidth: 2,
-        color: '#F0F0F0',
+        color: 'red',
     },
     button: {
         backgroundColor: '#F0F0F0',
@@ -107,7 +210,18 @@ const styles = StyleSheet.create({
         borderColor: 'red',
         borderWidth: 2,
         borderRadius: 10,
+        margin: 5,
+    },
+    buttonText: {
+        width: 100,
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
         margin: 10,
+    },
+    facebookButton: {
+        height: 50,
+        width: 230,
     }
 });
 

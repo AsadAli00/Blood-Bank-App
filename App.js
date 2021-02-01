@@ -16,7 +16,7 @@ import {
   Text,
   StatusBar,
 } from 'react-native';
-import Navigation from './src/config/Navigation';
+import Navigation from './src/config/Navigation/Navigation';
 
 
 
