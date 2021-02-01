@@ -5,19 +5,20 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import logo1 from '../../src/images/logo/logo1.png'
 
 // create a component
-const Home = ({navigation}) => {
+const Home = ({ navigation }) => {
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1, flex: 1 }} keyboardShouldPersistTaps='handled'>
             <View style={styles.container}>
                 <View style={styles.headLogo}>
                     <Image style={styles.logo} source={logo1} resizeMode="center" />
+                    <Text style={styles.LogoText}>BLOOD <Text style={{color: '#90ee90'}}> BANK</Text></Text>
                 </View>
-                <View style={{ flex: 0.2, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                    <TouchableOpacity style={styles.button} >
-                        <Text style={{ color: '#ffff', fontSize: 20, fontWeight: 'bold'}}>Donate Now</Text>
+                <View style={{ flex: 0.3, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Donation Form")} >
+                        <Text style={{ color: '#ffff', fontSize: 20, fontWeight: 'bold' }}>Donate Now</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate("Login")} >
-                        <Text style={{ color: '#ffff', fontSize: 20, fontWeight: 'bold'}}>Need Blood</Text>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")} >
+                        <Text style={{ color: '#ffff', fontSize: 20, fontWeight: 'bold' }}>Need Blood</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -34,10 +35,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#F1F1F1',
     },
     headLogo: {
-        flex: 0.5,
-        flexDirection: 'row',
+        flex: 0.4,
+        flexDirection: 'column',
         justifyContent: 'center',
-        alignItems :'center',
+        alignItems: 'center',
 
 
     },
@@ -45,6 +46,13 @@ const styles = StyleSheet.create({
         flex: 1,
         width: 300,
         height: 200,
+    },
+    LogoText: {
+        color: 'red',
+        // fontFamily: 'monospace',
+        fontSize: 40,
+        fontWeight: 'bold',
+        paddingTop: 20,
     },
     button: {
         backgroundColor: 'red',
