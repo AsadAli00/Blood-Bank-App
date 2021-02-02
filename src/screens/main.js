@@ -6,7 +6,7 @@ import { View, Text, StyleSheet } from 'react-native';
 const Main = () => {
     return (
         <View style={styles.container}>
-            <Text>Main</Text>
+            
         </View>
     );
 };

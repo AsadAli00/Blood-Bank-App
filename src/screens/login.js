@@ -7,8 +7,10 @@ import logo from '../images/logo/logo.png';
 import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth'
 import { GoogleSignin, statusCodes, GoogleSigninButton } from '@react-native-community/google-signin';
-import { LoginManager, AccessToken, LoginButton } from 'react-native-fbsdk';
+// import { LoginManager, AccessToken, LoginButton } from 'react-native-fbsdk';
 import { Spinner } from 'native-base'
+import { createStore } from 'redux';
+import reducer from '.././config/Reducer/index'
 
 
 // create a component
@@ -18,6 +20,8 @@ const Login = ({ navigation }) => {
     // const [loggedIn, setloggedIn] = useState(false);
     // const [userInfo, setuserInfo] = useState([]);
 
+
+    const store = createStore(auth, {})
 
     useEffect(() => {
         GoogleSignin.configure({
@@ -34,6 +38,24 @@ const Login = ({ navigation }) => {
             email: email,
             password: password,
         }
+
+
+        auth()
+            .signInWithEmailAndPassword(user.email, user.password)
+            .then((userCredential) => {
+                // Signed in
+                var user = userCredential.user;
+                // store.dispatch({
+                //     type: 'CurrentUser',
+                //     val: user,
+                //   })
+
+                // ...
+            })
+            .catch((error) => {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+            });
     }
     const googleSignIn = async () => {
         try {
@@ -51,83 +73,83 @@ const Login = ({ navigation }) => {
             }, 1000)
 
 
-            } catch (error) {
-                if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                    console.log(error);
-                } else if (error.code === statusCodes.IN_PROGRESS) {
-                    console.log(error);
-                } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                    // play services not available or outdated
-                } else {
-                    console.log(error);
-                }
+        } catch (error) {
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                console.log(error);
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                console.log(error);
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                // play services not available or outdated
+            } else {
+                console.log(error);
             }
-        };
+        }
+    };
 
 
-        // const FacbookLogin = async () => {
-        //     // Attempt login with permissions
-        //     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+    // const FacbookLogin = async () => {
+    //     // Attempt login with permissions
+    //     const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
 
-        //     if (result.isCancelled) {
-        //         throw 'User cancelled the login process';
-        //     }
+    //     if (result.isCancelled) {
+    //         throw 'User cancelled the login process';
+    //     }
 
-        //     // Once signed in, get the users AccesToken
-        //     const data = await AccessToken.getCurrentAccessToken();
+    //     // Once signed in, get the users AccesToken
+    //     const data = await AccessToken.getCurrentAccessToken();
 
-        //     if (!data) {
-        //         throw 'Something went wrong obtaining access token';
-        //     }
+    //     if (!data) {
+    //         throw 'Something went wrong obtaining access token';
+    //     }
 
-        //     // Create a Firebase credential with the AccessToken
-        //     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
+    //     // Create a Firebase credential with the AccessToken
+    //     const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
 
-        //     // Sign-in the user with the credential
-        //     return auth().signInWithCredential(facebookCredential);
-        // }
+    //     // Sign-in the user with the credential
+    //     return auth().signInWithCredential(facebookCredential);
+    // }
 
-        return (
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps='handled'>
-                <View style={styles.container} ke>
-                    <ImageBackground source={LoginImage} style={styles.back_image}>
-                        <View style={styles.logoContainer}>
-                            <Image style={styles.image} source={logo} />
-                            <Text style={styles.LogoText}>BLOOD BANK</Text>
+    return (
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps='handled'>
+            <View style={styles.container} ke>
+                <ImageBackground source={LoginImage} style={styles.back_image}>
+                    <View style={styles.logoContainer}>
+                        <Image style={styles.image} source={logo} />
+                        <Text style={styles.LogoText}>BLOOD BANK</Text>
+                    </View>
+                    <View style={styles.loginContainer}>
+                        <View style={{ flex: 0.2, flexDirection: 'column' }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'red', paddingLeft: 20 }}>Email</Text>
+                            <TextInput style={styles.textInput} value={email} onChangeText={text => setEmail(text)}
+                                maxLength={40} placeholder="Email" autoCapitalize="none" autoCorrect={false} placeholderTextColor="grey" />
                         </View>
-                        <View style={styles.loginContainer}>
-                            <View style={{ flex: 0.2, flexDirection: 'column' }}>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'red', paddingLeft: 20 }}>Email</Text>
-                                <TextInput style={styles.textInput} value={email} onChangeText={text => setEmail(text)}
-                                    maxLength={40} placeholder="Email" autoCapitalize="none" autoCorrect={false} placeholderTextColor="grey" />
-                            </View>
-                            <View style={{ flex: 0.22, flexDirection: 'column' }}>
-                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'red', paddingLeft: 20 }}>Password</Text>
-                                <TextInput value={password} placeholderTextColor="grey" placeholder="Password" style={styles.textInput} secureTextEntry={true}
-                                    maxLength={40} onChangeText={text => setPassword(text)} />
-                            </View>
-                            <View style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                                <TouchableOpacity style={styles.button} onPress={SignIn} >
-                                    <Text style={{ color: 'red', fontSize: 20, fontWeight: 'bold' }}>SIGN IN</Text>
+                        <View style={{ flex: 0.22, flexDirection: 'column' }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'red', paddingLeft: 20 }}>Password</Text>
+                            <TextInput value={password} placeholderTextColor="grey" placeholder="Password" style={styles.textInput} secureTextEntry={true}
+                                maxLength={40} onChangeText={text => setPassword(text)} />
+                        </View>
+                        <View style={{ flex: 0.1, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                            <TouchableOpacity style={styles.button} onPress={SignIn} >
+                                <Text style={{ color: 'red', fontSize: 20, fontWeight: 'bold' }}>SIGN IN</Text>
+                            </TouchableOpacity>
+                            <View style={{ flex: 0.1, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' }}>
+                                <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#ffff' }}>New User ?</Text>
+                                <TouchableOpacity style={styles.buttonText} onPress={() => navigation.navigate('SignUp')}>
+                                    <Text style={{ color: '#ffff', fontSize: 20, fontWeight: 'bold', textDecorationStyle: 'solid', textDecorationLine: 'underline' }}>Register</Text>
                                 </TouchableOpacity>
-                                <View style={{ flex: 0.1, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' }}>
-                                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#ffff' }}>New User ?</Text>
-                                    <TouchableOpacity style={styles.buttonText} onPress={() => navigation.navigate('SignUp')}>
-                                        <Text style={{ color: '#ffff', fontSize: 20, fontWeight: 'bold', textDecorationStyle: 'solid', textDecorationLine: 'underline' }}>Register</Text>
-                                    </TouchableOpacity>
-                                </View>
                             </View>
-                            <View>
-                                <GoogleSigninButton style={{ height: 60, width: 240 }}
-                                    size={GoogleSigninButton.Size.Wide} onPress={googleSignIn} />
-                            </View>
-                            <View style={{ width: 230 }}>
-                                {/* <Button
+                        </View>
+                        <View>
+                            <GoogleSigninButton style={{ height: 60, width: 240 }}
+                                size={GoogleSigninButton.Size.Wide} onPress={googleSignIn} />
+                        </View>
+                        <View style={{ width: 230 }}>
+                            {/* <Button
                                 onPress={FacbookLogin}
                                 title="Continue with fb"
                                 color="#4267B2" ></Button> */}
 
-                                {/* <LoginButton
+                            {/* <LoginButton
                                 onLoginFinished={
                                     (error, result) => {
                                         if (error) {
@@ -144,98 +166,98 @@ const Login = ({ navigation }) => {
                                     }
                                 }
                                 onLogoutFinished={() => console.log("logout.")} /> */}
-                            </View>
-
                         </View>
 
+                    </View>
 
-                    </ImageBackground>
-                </View >
-            </ScrollView >
-        );
-    };
 
-    // define your styles
-    const styles = StyleSheet.create({
-        container: {
-            flex: 1,
-            flexDirection: 'column',
-            fontFamily: 'sans-serif',
-        },
-        back_image: {
-            flex: 1,
-            resizeMode: "cover",
-        },
-        text: {
-            color: "#000000"
-        },
-        logoContainer: {
-            flex: 0.4,
-            justifyContent: 'center',
-            alignItems: 'center',
-            alignSelf: 'center'
-        },
-        image: {
-            flex: 0.5,
-            alignItems: 'center',
-            width: 150,
-            height: 70,
-            resizeMode: 'stretch'
-        },
-        LogoText: {
-            color: 'red',
-            // fontFamily: 'monospace',
-            fontSize: 40,
-            fontWeight: 'bold',
-            paddingTop: 20,
-        },
-        loginContainer: {
-            flex: 0.5,
-            alignItems: 'center',
-            fontSize: 15,
-            fontWeight: '200',
-        },
-        textInput: {
-            borderRadius: 5,
-            borderColor: '#ffff',
-            height: 50,
-            width: 250,
-            fontSize: 17,
-            margin: 5,
-            fontWeight: '200',
-            borderColor: 'red',
-            paddingLeft: 10,
-            borderWidth: 2,
-            color: 'red',
-        },
-        button: {
-            backgroundColor: '#F0F0F0',
-            width: 100,
-            height: 50,
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderColor: 'red',
-            borderWidth: 2,
-            borderRadius: 10,
-            margin: 5,
-        },
-        buttonText: {
-            width: 100,
-            height: 50,
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: 10,
-        },
-        facebookButton: {
-            height: 50,
-            width: 230,
-        },
-        spinner: {
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-        }
-    });
+                </ImageBackground>
+            </View >
+        </ScrollView >
+    );
+};
 
-    //make this component available to the app
-    export default Login;
+// define your styles
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+        fontFamily: 'sans-serif',
+    },
+    back_image: {
+        flex: 1,
+        resizeMode: "cover",
+    },
+    text: {
+        color: "#000000"
+    },
+    logoContainer: {
+        flex: 0.4,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center'
+    },
+    image: {
+        flex: 0.5,
+        alignItems: 'center',
+        width: 150,
+        height: 70,
+        resizeMode: 'stretch'
+    },
+    LogoText: {
+        color: 'red',
+        // fontFamily: 'monospace',
+        fontSize: 40,
+        fontWeight: 'bold',
+        paddingTop: 20,
+    },
+    loginContainer: {
+        flex: 0.5,
+        alignItems: 'center',
+        fontSize: 15,
+        fontWeight: '200',
+    },
+    textInput: {
+        borderRadius: 5,
+        borderColor: '#ffff',
+        height: 50,
+        width: 250,
+        fontSize: 17,
+        margin: 5,
+        fontWeight: '200',
+        borderColor: 'red',
+        paddingLeft: 10,
+        borderWidth: 2,
+        color: 'red',
+    },
+    button: {
+        backgroundColor: '#F0F0F0',
+        width: 100,
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: 'red',
+        borderWidth: 2,
+        borderRadius: 10,
+        margin: 5,
+    },
+    buttonText: {
+        width: 100,
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 10,
+    },
+    facebookButton: {
+        height: 50,
+        width: 230,
+    },
+    spinner: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+    }
+});
+
+//make this component available to the app
+export default Login;

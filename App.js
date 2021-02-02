@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React,{useEffect} from 'react';
+import React, { useEffect } from 'react';
 import SplashScreen from 'react-native-splash-screen'
 import {
   SafeAreaView,
@@ -17,12 +17,14 @@ import {
   StatusBar,
 } from 'react-native';
 import Navigation from './src/config/Navigation/Navigation';
+import auth from './src/config/context/authContext'
 
 
-
-const App = () => {  
+const App = () => {
   return (
-    <Navigation></Navigation>
+    <auth.Provider>
+      <Navigation></Navigation>
+    </auth.Provider>
   );
 };
 
@@ -36,7 +38,7 @@ const styles = StyleSheet.create({
   },
   container1: {
     flex: 0.5,
-    flexDirection : 'row',
+    flexDirection: 'row',
     backgroundColor: 'yellow',
     justifyContent: 'center',
     alignItems: 'center'
