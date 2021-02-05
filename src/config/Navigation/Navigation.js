@@ -33,7 +33,7 @@ const Navigation = () => {
                 headerTitleStyle: {
                   fontWeight: 'bold'
                 }}} />
-                <Stack.Screen name="MainScreen" component={main} />
+                <Stack.Screen name="MainScreen" component={main}  options={{ title: false, headerShown: false, header: "null"}} />
             </Stack.Navigator>
         </NavigationContainer>
     );

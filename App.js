@@ -17,14 +17,16 @@ import {
   StatusBar,
 } from 'react-native';
 import Navigation from './src/config/Navigation/Navigation';
-import auth from './src/config/context/authContext'
+import { Provider } from 'react-redux';
+import store from './src/config/store'
 
 
 const App = () => {
   return (
-    <auth.Provider>
+    <Provider store={store}>
       <Navigation></Navigation>
-    </auth.Provider>
+    </Provider>
+
   );
 };
 

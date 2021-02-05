@@ -2,6 +2,7 @@ import React, { Component, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ImageBackground, Image, Keyboard, TouchableWithoutFeedback, Button, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import LoginImage from '../images/login-background/login.jpg';
+import {Toast} from 'native-base'
 import logo from '../images/logo/logo.png';
 import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
@@ -12,6 +13,7 @@ const SignUp = ({navigation}) => {
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
     const [mobile, setMobile] = useState('');
+    const [showToast,setShowToast] = useState(false)
 
 
     const SignUp = () => {
@@ -74,6 +76,14 @@ const SignUp = ({navigation}) => {
                     ],
                     { cancelable: false }
                 );
+                const userData = {
+                    email: email,
+                    password: password,
+                    fullName: fullName,
+                    mobile: mobile,
+                }
+                database().ref('/').child('emailUsers').push(userData);
+                
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {
@@ -113,13 +123,7 @@ const SignUp = ({navigation}) => {
 
             });
 
-            const userData = {
-                email: email,
-                password: password,
-                fullName: fullName,
-                mobile: mobile,
-            }
-            database().ref('/').child('emailUsers').push(userData)
+            
     }
 
     return (

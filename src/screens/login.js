@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ImageBackground, Image, Keyboard, TouchableWithoutFeedback, Button, TouchableOpacity, ScrollView, } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Image, Keyboard, TouchableWithoutFeedback, Button, TouchableOpacity, ScrollView,Alert} from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import LoginImage from '../images/login-background/login.jpg';
 import logo from '../images/logo/logo.png';
@@ -8,9 +8,8 @@ import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth'
 import { GoogleSignin, statusCodes, GoogleSigninButton } from '@react-native-community/google-signin';
 // import { LoginManager, AccessToken, LoginButton } from 'react-native-fbsdk';
-import { Spinner } from 'native-base'
-import { createStore } from 'redux';
-import reducer from '.././config/Reducer/index'
+import { useSelector, useDispatch } from 'react-redux'
+import { auth_Data } from '../config/store/action/index'
 
 
 // create a component
@@ -20,8 +19,10 @@ const Login = ({ navigation }) => {
     // const [loggedIn, setloggedIn] = useState(false);
     // const [userInfo, setuserInfo] = useState([]);
 
+    const dispatch = useDispatch()
+    const authData = data => dispatch(auth_Data(data))
 
-    const store = createStore(auth, {})
+
 
     useEffect(() => {
         GoogleSignin.configure({
@@ -30,6 +31,8 @@ const Login = ({ navigation }) => {
                 '452543779948-ptdt0deuicsqi3ui30svjo1l866lm1bg.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
             offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
         });
+
+
     }, []);
 
 
@@ -38,7 +41,35 @@ const Login = ({ navigation }) => {
             email: email,
             password: password,
         }
-
+        if (!email.trim()) {
+            Alert.alert(
+                'Missing',
+                'Enter your Email',
+                [
+                    {
+                        text: 'Ok',
+                        onPress: () => console.log("name"),
+                        style: 'cancel'
+                    }
+                ],
+                { cancelable: false }
+            );
+        }
+        //Check for the Email TextInput
+        else if (!password.trim()) {
+            Alert.alert(
+                'Missing',
+                'Enter Your pasword',
+                [
+                    {
+                        text: 'Ok',
+                        onPress: () => console.log("ok"),
+                        style: 'cancel'
+                    }
+                ],
+                { cancelable: false }
+            );
+        }
 
         auth()
             .signInWithEmailAndPassword(user.email, user.password)
@@ -49,6 +80,21 @@ const Login = ({ navigation }) => {
                 //     type: 'CurrentUser',
                 //     val: user,
                 //   })
+                Alert.alert(
+                    'Done',
+                    'Successfully Login',
+                    [
+                        {
+                            text: 'Ok',
+                            onPress: () => navigation.navigate("MainScreen"),
+                            style: 'cancel'
+                        }
+                    ],
+                    { cancelable: false }
+                );
+
+                authData(user)
+                console.log(user);
 
                 // ...
             })
@@ -64,10 +110,21 @@ const Login = ({ navigation }) => {
             const googleCredential = auth.GoogleAuthProvider.credential(userInfo.idToken);
             // Sign-in the user with the credential
             console.log(userInfo);
-            database().ref('/').child('googleUsers').push(userInfo.user)
+            //     let idTokens = {};
+            //    database().ref('/').child('googleUsers').on('child_added',(data)=>{
+            //         const userData = data.val()
+            //         idTokens =userData.idToken
+            //         console.log(idTokens);
+            //     });
+
+            // console.log(idTokens);
+
 
             auth().signInWithCredential(googleCredential);
+            authData(userInfo)
 
+
+            // console.log(userInfo.user);
             setTimeout(() => {
                 navigation.navigate('MainScreen')
             }, 1000)
@@ -120,7 +177,7 @@ const Login = ({ navigation }) => {
                     <View style={styles.loginContainer}>
                         <View style={{ flex: 0.2, flexDirection: 'column' }}>
                             <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'red', paddingLeft: 20 }}>Email</Text>
-                            <TextInput style={styles.textInput} value={email} onChangeText={text => setEmail(text)}
+                            <TextInput style={styles.textInput} value={email} keyboardType="email-address" onChangeText={text => setEmail(text)}
                                 maxLength={40} placeholder="Email" autoCapitalize="none" autoCorrect={false} placeholderTextColor="grey" />
                         </View>
                         <View style={{ flex: 0.22, flexDirection: 'column' }}>
