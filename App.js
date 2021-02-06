@@ -18,13 +18,18 @@ import {
 } from 'react-native';
 import Navigation from './src/config/Navigation/Navigation';
 import { Provider } from 'react-redux';
-import store from './src/config/store'
+import store from './src/config/store';
+import { NavigationContainer } from '@react-navigation/native';
 
 
 const App = () => {
+ 
   return (
     <Provider store={store}>
       <Navigation></Navigation>
+      {/* <NavigationContainer>
+        <MyDrawer />
+      </NavigationContainer> */}
     </Provider>
 
   );

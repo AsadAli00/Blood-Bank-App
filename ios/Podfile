@@ -10,6 +10,8 @@ target 'BB_App' do
 
   pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
 
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
   target 'BB_AppTests' do
     inherit! :complete
     # Pods for testing

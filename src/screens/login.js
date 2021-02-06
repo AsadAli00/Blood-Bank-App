@@ -1,6 +1,6 @@
 //import liraries
 import React, { Component, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ImageBackground, Image, Keyboard, TouchableWithoutFeedback, Button, TouchableOpacity, ScrollView,Alert} from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Image, Keyboard, TouchableWithoutFeedback, Button, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import LoginImage from '../images/login-background/login.jpg';
 import logo from '../images/logo/logo.png';
@@ -76,6 +76,35 @@ const Login = ({ navigation }) => {
             .then((userCredential) => {
                 // Signed in
                 var user = userCredential.user;
+                if (!email.trim()) {
+                    Alert.alert(
+                        'Missing',
+                        'Enter your Email',
+                        [
+                            {
+                                text: 'Ok',
+                                onPress: () => console.log("Email"),
+                                style: 'cancel'
+                            }
+                        ],
+                        { cancelable: false }
+                    );
+                }
+                //Check for the Email TextInput
+                else if (!password.trim()) {
+                    Alert.alert(
+                        'Missing',
+                        'Enter Your password',
+                        [
+                            {
+                                text: 'Ok',
+                                onPress: () => console.log("ok"),
+                                style: 'cancel'
+                            }
+                        ],
+                        { cancelable: false }
+                    );
+                }
                 // store.dispatch({
                 //     type: 'CurrentUser',
                 //     val: user,
@@ -101,6 +130,21 @@ const Login = ({ navigation }) => {
             .catch((error) => {
                 var errorCode = error.code;
                 var errorMessage = error.message;
+                if (error) {
+                    Alert.alert(
+                        'Error',
+                        errorMessage,
+                        [
+                            {
+                                text: 'Ok',
+                                onPress: () => console.log("SignUp Error"),
+                                style: 'cancel'
+                            }
+                        ],
+                        { cancelable: false }
+                    );
+                }
+
             });
     }
     const googleSignIn = async () => {
@@ -132,13 +176,46 @@ const Login = ({ navigation }) => {
 
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                console.log(error);
+                    Alert.alert(
+                        'Error',
+                        error,
+                        [
+                            {
+                                text: 'Ok',
+                                onPress: () => console.log("Google Error"),
+                                style: 'cancel'
+                            }
+                        ],
+                        { cancelable: false }
+                    );
             } else if (error.code === statusCodes.IN_PROGRESS) {
-                console.log(error);
+                Alert.alert(
+                    'Error',
+                    error,
+                    [
+                        {
+                            text: 'Ok',
+                            onPress: () => console.log("Google Error"),
+                            style: 'cancel'
+                        }
+                    ],
+                    { cancelable: false }
+                );
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
                 // play services not available or outdated
             } else {
-                console.log(error);
+                Alert.alert(
+                    'Error',
+                    error,
+                    [
+                        {
+                            text: 'Ok',
+                            onPress: () => console.log("Google Error"),
+                            style: 'cancel'
+                        }
+                    ],
+                    { cancelable: false }
+                );
             }
         }
     };
@@ -315,6 +392,7 @@ const styles = StyleSheet.create({
         left: '50%',
     }
 });
+
 
 //make this component available to the app
 export default Login;
